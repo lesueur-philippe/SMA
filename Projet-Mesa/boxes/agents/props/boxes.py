@@ -7,11 +7,21 @@ from ..config import BoxDefaults
 
 
 class Box(PortrayedAgent) :
+    """
+    A class to represent a box on the grid.
+    """
 
     def __init__(self,
                  unique_id : int,
                  model : Model,
                  **kwargs : int) :
+        """
+        Generated the box.
+
+        :param unique_id: the box id
+        :param model: the model the box is related to
+        :param kwargs: additional configuration information
+        """
         super(Box, self).__init__(unique_id, model)
         self.weight       = kwargs.get("weight", BoxDefaults.BASE_WEIGHT.value)
         self.noise_weight = kwargs.get("noise_weight", BoxDefaults.NOISE_WEIGHT.value)

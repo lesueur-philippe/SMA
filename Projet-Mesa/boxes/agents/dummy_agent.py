@@ -8,14 +8,27 @@ from .props.boxes import Box
 
 
 class DummyAgent(BaseAgent, ABC) :
+    """
+    A class for a dummy agent.
+
+    The dummy agent moves randomly until he finds a box then returns to the destination cell.
+    He does not communicate with his fellow agents at all.
+    """
 
     def __init__(self,
                  unique_id : int,
                  model : Model,
                  **kwargs : int) :
+        """
+        Generates the agent
+
+        :param unique_id: the id for the agent
+        :param model: the model the agent is related to
+        :param kwargs: additional configuration values
+        """
         super(DummyAgent, self).__init__(unique_id, model, **kwargs)
 
-    def _choose_action(self) :
+    def _choose_action(self) -> None :
         print("Moving")
         self.__move()
         cellmates = self.model.grid.get_cell_list_contents([self.pos])
@@ -27,7 +40,11 @@ class DummyAgent(BaseAgent, ABC) :
         if self.pos == (0, 0) :
             self._drop_box()
 
-    def __move(self) :
+    def __move(self) -> None :
+        """
+        Lets the agent move in the neighbouring cells. Cell is chosen at random if the agent
+        is not carrying, if he is, the cell is the cell closest to the destination.
+        """
         possible_steps = self.model.grid.get_neighborhood(
                 self.pos, moore = True, include_center = False
         )
