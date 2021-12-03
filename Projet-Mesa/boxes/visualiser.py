@@ -65,8 +65,8 @@ grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 server = ModularServer(BoxModel,
                        [grid, chart],
                        "Box Carrying Model",
-                       {"nb_agents" : 2,
-                        "nb_boxes" : 2,
+                       {"nb_agents" : 3,
+                        "nb_boxes" : 6,
                         "width" : 10,
                         "height" : 10,
                         "torus" : False})
