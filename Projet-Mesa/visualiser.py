@@ -1,13 +1,10 @@
-import numpy as np
-
-from model import *
 from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.modules import ChartModule
-from mesa.visualization.ModularVisualization import VisualizationElement
 from typing import Dict, Union
 
-from agents.portrayed_agent import PortrayedAgent
+from boxes.agents import PortrayedAgent
+from boxes.models import AssigningModel, SimpleModel
 
 
 def agent_portrayal(agent : PortrayedAgent) -> Dict[str, Union[str, float]]:
@@ -22,7 +19,7 @@ chart = ChartModule([{"Label" : "Carrying",
 
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)
 
-server = ModularServer(BoxModel,
+server = ModularServer(SimpleModel,
                        [grid, chart],
                        "Box Carrying Model",
                        {"nb_agents" : 2,

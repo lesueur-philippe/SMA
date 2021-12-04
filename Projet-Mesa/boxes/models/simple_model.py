@@ -1,30 +1,20 @@
-from mesa import Agent, Model
 from mesa.time import RandomActivation
-from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
-from collectors import get_nb_carrying, get_remaining_boxes
+from ..utils.collectors import get_nb_carrying, get_remaining_boxes
 
-from agents.dummy_agent import DummyAgent
-from agents.props import Box, Destination
-
-
-class GridModel(Model) :
-    def __init__(self,
-                 width : int,
-                 height : int,
-                 torus : bool) :
-        super(GridModel, self).__init__()
-        self.grid = MultiGrid(width, height, torus)
+from ..agents.dummy_agent import DummyAgent
+from ..agents.props import Box, Destination
+from .grid_model import GridModel
 
 
-class BoxModel(GridModel) :
+class SimpleModel(GridModel) :
     def __init__(self,
                  nb_agents : int,
                  nb_boxes : int,
                  width : int,
                  height : int,
                  torus : bool) :
-        super(BoxModel, self).__init__(width, height, torus)
+        super(SimpleModel, self).__init__(width, height, torus)
         self.nb_agents = nb_agents
         self.nb_boxes = nb_boxes
         self.schedule = RandomActivation(self)

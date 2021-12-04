@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Dict, Union
 
 from mesa import Model
 
@@ -30,13 +31,6 @@ class BaseAgent(PortrayedAgent, ABC) :
         self.strength = kwargs.get("strength", AgentDefaults.BASE_STRENGTH.value)
         self.currently_carrying = 0
 
-    @abstractmethod
-    def _choose_action(self) -> None :
-        """
-        Proposes an interface where the agent chooses an action.
-        """
-        pass
-
     def _pickup_box(self, box : Box) -> None :
         """
         Lets the agent pick up a given box
@@ -64,9 +58,23 @@ class BaseAgent(PortrayedAgent, ABC) :
         self.carrying = False
         self.currently_carrying = 0
 
+    @abstractmethod
     def step(self) -> None :
-        # print(f"Step called {self}")
-        # print(f"{self.pos}")
+        pass
 
-        self._choose_action()
+    def portray(self) -> Dict[str, Union[str, float]] :
+        portrayal = {
+            "Shape"  : "rect",
+            "Filled" : "true",
+            "w"      : 0.8,
+            "h"      : 0.8,
+            "Layer"  : 0
+        }
+        if not self.carrying :
+            color = "#A0B8CF"
+        else :
+            color = "#EFAD06"
+        portrayal["Color"] = color
+
+        return portrayal
         
