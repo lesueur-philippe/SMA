@@ -27,7 +27,7 @@ class SimpleModel(GridModel) :
             agent = DummyAgent(i, self, strength = 10)
             self.schedule.add(agent)
             self.carriers[i] = agent
-            self.grid.place_agent(agent, (0, 0))
+            self.grid.place_agent(agent, (i+1%self.grid.width, i+1//self.grid.width))
 
         for i in range(self.nb_boxes) :
             index = i + self.nb_agents
