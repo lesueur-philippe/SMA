@@ -3,9 +3,9 @@ from typing import Dict, Union
 
 from mesa import Model
 
-from .config import AgentDefaults
-from .portrayed_agent import PortrayedAgent
-from .props.boxes import Box
+from boxes.agents.config import AgentDefaults
+from boxes.agents.portrayed_agent import PortrayedAgent
+from boxes.agents.props.boxes import Box
 
 
 class BaseAgent(PortrayedAgent, ABC) :

@@ -1,7 +1,6 @@
 from abc import ABC
-from typing import Dict, Union
 
-from .base_agent import BaseAgent
+from .templates import BaseAgent
 from mesa import Model
 
 from .props import Box
