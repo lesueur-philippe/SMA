@@ -33,7 +33,7 @@ class SmartAgent(BaseAgent) :
             target_position = self.model.platform_pos
         if not target_position is None:
         # Get distance from each neighbour to target
-            distances = [(cell, get_distance(target_position, cell)) for cell in neighbouring_cells]
+            distances = [(cell, get_distance(target_position, cell)) for cell in self.wished_positions]
             distance_from_current = get_distance(target_position, self.pos)
             wished = []
             for distance in distances:
@@ -57,49 +57,50 @@ class SmartAgent(BaseAgent) :
             for agent in cellmates:
                 if isinstance(agent, SmartAgent) and (not agent == self) and not (agent in agents):
                     agents.append(agent)
-        for agent in agents:
-            if not (agent in self.negociated_with):
-                self.__negociate(self, agent, wished)
+        for wish in wished:
+            agreements = []
+            for agent in agents:
+                if not (agent in self.negociated_with):
+                    bool = self.__negociate(agent, wished)
+            if all(agreements):
+                return wish
+        good_pos = []
+        for wish in self.wished_positions:
+            agreements = []
+            for agent in agents:
+                if not (agent in self.negociated_with):
+                    bool = self.__negociate(agent, wished)
+                    agent.negociated = True
+                    agent.negociated_with.append(self)
+            if all(agreements):
+                good_pos.append(wish)
+        try:
+            pos = random.choice(good_pos)
+        except ValueError:
+            return self.pos
+        return pos
+        
+    def is_next_to_target(self):
+        neighbours = self.model.grid.get_neighborhood(
+                    self.pos, moore = False, include_center = False)
+        return self.target_pos in neighbours
 
-    def __negociate(self, agent, wished_positions) -> Position :
+    def __negociate(self, agent, wish) -> Position :
+        if agent.is_next_to_target():
+            if wish == agent.pos:
+                return False
+            else:
+                return True
         if not agent.negociated and agent.round == self.round:
             agent.available_next_steps()
-        agent_wished_positions = agent..get_wished_positions()
-        if len(agent_wished_positions) > 1:
-            pos = random.choice(wished_positions)
-            if pos in agent.wished_positions:
-                agent.wished_positions.remove(pos)
-            return pos
-        elif len(agent_wished_positions) == 1:
-            if agent.wished_positions > 1:
-                for pos in wished_positions:
-                    if not pos in agent_wished_positions:
-                        try:
-                            agent.wished_positions.remove(pos)
-                        except ValueError:
-                            pass
-                    return pos
-                pos = random.choice(wished_positions)
-                try:
-                    agent.wished_positions.remove(pos)
-                except ValueError:
-                    pass
-                return pos
-            elif len(agent.wished_positions) == 1:
-                if wished_positions[0] == agent_wished_positions[0]:
-                    pass
-                else:
-                    try:
-                        agent.wished_positions.remove(wished_positions[0])
-                    except ValueError:
-                        pass
-                    return wished_positions[0]
-            else:
-                
+            agent.negociated = True
+        agent_wished_positions = agent.get_wished_positions()
+        if (not wish in agent_wished_positions) and (not wish in agent.wished_positions):
+                return True
+        elif len(agent_wished_positions) > 1:
+            return True
         else:
-
-        
-            
+            return len(agent.wished_positions) > 1
 
     def available_next_steps(self):
         neighbouring_cells = self.model.grid.get_neighborhood(
@@ -132,7 +133,7 @@ class SmartAgent(BaseAgent) :
     def _move(self) -> None :
         # print("Move !", self)
         # print(self.pos)
-        bs = self.__negociate()
+        bs = self.__choose_action()
         # print(f"BS : {bs}")
         self.model.grid.move_agent(self, bs)
         # print(self.pos)
@@ -149,10 +150,10 @@ class SmartAgent(BaseAgent) :
         neighbours = self.model.grid.get_neighborhood(
                 self.pos, moore = False, include_center = False
         )
-        close_agents = self.model.grid.get_cell_list_contents(neighbours)
+        #close_agents = self.model.grid.get_cell_list_contents(neighbours)
 
         print(f"{neighbours}\n{self.target_pos}")
-        if not self.carrying and self.target_pos in neighbours :
+        if (not self.carrying) and (self.target_pos in neighbours) :
             print("Case 1")
             self._pickup_box(self.target_box)
         elif self.carrying and self.model.platform_pos in neighbours :
