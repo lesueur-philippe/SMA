@@ -1,30 +1,43 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, Union
+from typing import List, Optional
 
-from mesa import Model
-
-from boxes.agents.config import AgentDefaults
+from boxes.agents.negotiation import Message
 from boxes.agents.portrayed_agent import PortrayedAgent
-from boxes.agents.props.boxes import Box
 from boxes.utils.types import Position
 
 
 class NegotiatorAgent(PortrayedAgent, ABC) :
 
-    @abstractmethod
-    def ask(self, other : NegotiatorAgent, request : Position) :
+    def send(self, message : Message, targets : List[NegotiatorAgent]) -> List[Message] :
         """
-        Ask a second agent about a given position.
-        :param other:
-        :param request:
-        :return:
+        Sends a message to other agents and returns the replies
+
+        :param message: the message to send
+        :param targets: the target for the message
+        :return: the list of replies
+        """
+
+        replies = []
+        for target in targets :
+            message.source = self
+            message.target = target
+            replies.append(target.reply(message))
+
+        return list(filter(None, replies))
+
+    @abstractmethod
+    def ask(self, targets : List[NegotiatorAgent], position : Position) -> bool :
+        """
+        Asks targets agents about a position and returns whether the position is chosen.
+
+        :param targets: the agents to send the position to
+        :param position: the position to enquire about
+        :return: whether the position is chosen or not
         """
         pass
 
     @abstractmethod
-    def answer(self, request : Position) :
+    def reply(self, message : Message) -> Optional[Message] :
         pass
-
-
