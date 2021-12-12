@@ -13,7 +13,8 @@ class BoxModel(Model) :
                  torus : bool = False) :
         super(BoxModel, self).__init__()
         self.grid : MultiGrid = MultiGrid(x, y, torus)
-        self.agents : List[PortrayedAgent] = []
-        self.boxes : List[Box] = []
+        self.agent_list : List[PortrayedAgent] = []
+        self.box_list   : List[Box] = []
         self.platform : Optional[Destination] = None
         self.platform_pos : Tuple[int, int] = (0, 0)
+

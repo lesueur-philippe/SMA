@@ -20,6 +20,7 @@ class NegotiatorAgent(PortrayedAgent, ABC) :
         """
 
         replies = []
+        print(f"{self}\nmsg : {message}\ntargets : {targets}")
         for target in targets :
             message.source = self
             message.target = target
@@ -28,7 +29,7 @@ class NegotiatorAgent(PortrayedAgent, ABC) :
         return list(filter(None, replies))
 
     @abstractmethod
-    def ask(self, targets : List[NegotiatorAgent], position : Position) -> bool :
+    def ask(self, targets : List[NegotiatorAgent], position : Position) :
         """
         Asks targets agents about a position and returns whether the position is chosen.
 
