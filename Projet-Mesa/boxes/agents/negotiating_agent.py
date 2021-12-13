@@ -44,9 +44,15 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
         self.target_box = None
 
     def _move(self) -> None :
+        """
+        Handles movement for the agent
+        """
         self.model.grid.move_agent(self, self.chosen_pos)
 
     def _find_best_move(self) -> None :
+        """
+        Find the best move by negotiating with all the other agents
+        """
         # Fill possible steps if needed
         if not self.possible_steps :
             self.compute_possible_steps()
@@ -68,6 +74,11 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
         self.decided = True
 
     def assign_box(self, box : Box) :
+        """
+        Assign a box to an agent
+
+        :param box: the box to assign
+        """
         self.target_box = box
         self.target_pos = box.pos
         self.distance_to_target = get_distance(self.pos, self.target_pos)
@@ -132,6 +143,14 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
         return reply
 
     def _handle_ask(self, position : Position, sender : NegotiatingAgent) -> Message :
+        """
+        Handles ASK messages. Agent will agree if they are not willing to go to position.
+        Agent will refuse if already decided on the position, and discuss if not.
+
+        :param position: the position being inquired
+        :param sender: the message sender
+        :return: the reply
+        """
         # Compute possible steps if needed
         if not self.possible_steps :
             self.compute_possible_steps()
@@ -155,9 +174,18 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
         return msg
 
     def _handle_agree(self) :
+        """
+        Handles an AGREE message
+        """
         pass
 
     def _handle_refuse(self, position : Position) -> Message :
+        """
+        Handles a REFUSE message. Returns the retraction for the position. Also removes position from possible steps
+
+        :param position: the refused position
+        :return: the retraction
+        """
 
         # Remove position from possible steps
         self._remove_position(position)
@@ -166,6 +194,13 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
         return Message(Status.RETRACT)
 
     def _handle_discuss(self, position : Position, messages : List[Message]) -> Message :
+        """
+        Handles a DISCUSS message. Chooses to confirm if this agent is the closest to target, else retracts
+
+        :param position: the discussed position
+        :param messages: the list of received messages
+        :return: a confirmation or retraction message
+        """
 
         # Find out if self is closer than all the other agents
         closer = all([self.distance_to_target <= eval(msg.message) for msg in messages])
@@ -180,18 +215,34 @@ class NegotiatingAgent(BaseAgent, NegotiatorAgent) :
             return Message(Status.RETRACT)
 
     def _handle_retract(self) :
+        """
+        Handles a RETRACT message
+        """
         pass
 
     def _handle_confirm(self, position : Position) :
+        """
+        Handles a CONFIRM message. Removes the position from possible steps
+
+        :param position: the confirmed position
+        """
         # Remove the position from available steps
         self._remove_position(position)
 
     def compute_possible_steps(self) :
+        """
+        Computes the list of possible moves
+        """
         self.possible_steps = self.model.grid.get_neighborhood(
                 self.pos, moore = False, include_center = False
         )
         self.possible_steps = sorted(self.possible_steps, key = lambda pos : get_distance(pos, self.target_pos))
 
     def _remove_position(self, position) :
+        """
+        Removes a position from the list of possible moves
+
+        :param position: the position to remove
+        """
         self.possible_steps = [pos for pos in self.possible_steps if pos != position]
         self.possible_steps = sorted(self.possible_steps, key = lambda pos : get_distance(pos, self.target_pos))

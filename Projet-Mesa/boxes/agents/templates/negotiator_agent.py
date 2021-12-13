@@ -41,4 +41,10 @@ class NegotiatorAgent(PortrayedAgent, ABC) :
 
     @abstractmethod
     def reply(self, message : Message) -> Optional[Message] :
+        """
+        Reply to a message from another agent
+
+        :param message: the message to reply to
+        :return: an optional reply
+        """
         pass
